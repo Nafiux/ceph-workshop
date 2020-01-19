@@ -1,0 +1,4 @@
+.vagrant/
+ceph-node1/
+ceph-node2/
+ceph-node3/
