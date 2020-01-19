@@ -26,9 +26,16 @@ The following guidelines should be followed to contribute with this project:
 * [Ansible](https://www.ansible.com/) - Version: 2.8.z (required by ceph-ansible stable-4.0), installation should be done with pip `pip install ansible==2.8.8` since Ansible version provided by yum isn't 2.8.z
 * [Python](https://www.python.org/) - Version: 3 (latest version available on the OS)
 * [CentOS 7](https://app.vagrantup.com/centos/boxes/7) - Supported by ceph nautilus
-* [Vagrant](https://www.vagrantup.com/) - Tested with 2.2.3 on Debian
-* [Virtualbox](https://www.virtualbox.org/) - Tested with virtualbox-6.0 on Debian
+* [Vagrant](https://www.vagrantup.com/), plugins:
+  * vagrant plugin install vagrant-proxyconf
+* [Virtualbox](https://www.virtualbox.org/) Vagrant supports up-to 6.0.z (https://www.vagrantup.com/docs/virtualbox/), >= 6.1.z isn't supported.
 
 # Getting started
 
 It's assumed that **192.168.100.0/24** network is available in your local machine (not used) to be created and managed by VirtualBox.
+
+# Troubleshooting
+
+## Debian 10 (buster)
+
+Vagrant 2.2.6 should be manually installed due a bug (https://github.com/dotless-de/vagrant-vbguest/issues/292) in 2.2.3 provided by apt.

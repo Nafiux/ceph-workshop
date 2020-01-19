@@ -13,6 +13,16 @@ fi
 
 if [ -e /etc/redhat-release ]; then
 
+	# Disable YUM fastestmirror plugin
+	sed -i 's/.*enabled=.*/enabled=0/g' /etc/yum/pluginconf.d/fastestmirror.conf
+	# Using baseurl instead of a mirrorlist
+	sed -e 's/^mirrorlist=/#mirrorlist=/' \
+    	-e 's/#baseurl=/baseurl=/' \
+    	-i /etc/yum.repos.d/CentOS-Base.repo
+	# References
+	# https://serverascode.com/2014/03/29/squid-cache-yum.html
+	# https://unix.stackexchange.com/questions/398609/how-do-i-stick-with-one-version-on-centos-7-via-yum-update
+
 	# Enable SSH Password Authetication
 	sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config
 	systemctl restart sshd
@@ -35,9 +45,8 @@ if [ -e /etc/redhat-release ]; then
 	# Installing dependencies
 	yum install git python3 -y
 	python3 -m pip install --upgrade pip
-	# ansible 2.8 is required, installing with pip
-	# since yum provides 2.6 and epel-release provides 2.9
-	# 2.8.0 has a bug, that is why 2.8.7 (latest) is needed
+	# ansible 2.8 is required (2.8.0 has a bug, using latest 2.8.7)
+	# it's installed with pip since yum provides 2.6 and epel-release provides 2.9
 	python3 -m pip install ansible==2.8.7
 	python3 -m pip install netaddr
 

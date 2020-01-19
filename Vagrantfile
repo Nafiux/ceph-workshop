@@ -20,12 +20,17 @@ ceph_node3_disk4 = './ceph-node3/ceph-node3_disk4.vdi'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
+        # Set proxy settings for all virtual machines, https://github.com/tmatilai/vagrant-proxyconf
+        config.proxy.http = "http://192.168.100.1:3128/"
+        config.proxy.https = "http://192.168.100.1:3128/"
+        config.proxy.no_proxy = "localhost,127.0.0.1"
+
         ##### Configuration for ceph-node1 #####
         config.vm.define :"ceph-node1" do |node1|
                 node1.vm.box = BOX
                 node1.vm.network "private_network", ip: "192.168.100.101"
                 node1.vm.hostname = ceph_node1
-                node1.vm.synced_folder ".", "/vagrant", disabled: true
+                node1.vm.synced_folder ".", "/vagrant", type: "nfs"
                 node1.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
                 node1.vm.provision "shell", path: "post-deploy.sh", run: "always"
                 node1.vm.provider "virtualbox" do |v|
@@ -58,7 +63,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 node2.vm.box = BOX
                 node2.vm.network "private_network", ip: "192.168.100.102"
                 node2.vm.hostname = ceph_node2
-                node2.vm.synced_folder ".", "/vagrant", disabled: true
+                node1.vm.synced_folder ".", "/vagrant", type: "nfs"
                 node2.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
                 node2.vm.provision "shell", path: "post-deploy.sh", run: "always"
                 node2.vm.provider "virtualbox" do |v|
@@ -91,7 +96,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 node3.vm.box = BOX
                 node3.vm.network "private_network", ip: "192.168.100.103"
                 node3.vm.hostname = ceph_node3
-                node3.vm.synced_folder ".", "/vagrant", disabled: true
+                node1.vm.synced_folder ".", "/vagrant", type: "nfs"
                 node3.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
                 node3.vm.provision "shell", path: "post-deploy.sh", run: "always"
                 node3.vm.provider "virtualbox" do |v|
