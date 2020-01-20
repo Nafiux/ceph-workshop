@@ -63,7 +63,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 node2.vm.box = BOX
                 node2.vm.network "private_network", ip: "192.168.100.102"
                 node2.vm.hostname = ceph_node2
-                node1.vm.synced_folder ".", "/vagrant", type: "nfs"
+                node2.vm.synced_folder ".", "/vagrant", type: "nfs"
                 node2.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
                 node2.vm.provision "shell", path: "post-deploy.sh", run: "always"
                 node2.vm.provider "virtualbox" do |v|
@@ -96,7 +96,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 node3.vm.box = BOX
                 node3.vm.network "private_network", ip: "192.168.100.103"
                 node3.vm.hostname = ceph_node3
-                node1.vm.synced_folder ".", "/vagrant", type: "nfs"
+                node3.vm.synced_folder ".", "/vagrant", type: "nfs"
                 node3.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
                 node3.vm.provision "shell", path: "post-deploy.sh", run: "always"
                 node3.vm.provider "virtualbox" do |v|

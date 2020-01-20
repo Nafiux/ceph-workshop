@@ -48,6 +48,9 @@ if [ -e /etc/redhat-release ]; then
 	# ansible 2.8 is required (2.8.0 has a bug, using latest 2.8.7)
 	# it's installed with pip since yum provides 2.6 and epel-release provides 2.9
 	python3 -m pip install ansible==2.8.7
+	# make ansible available with root
+	ln -s /usr/local/bin/ansible /usr/bin/ansible
+	ln -s /usr/local/bin/ansible-playbook /usr/bin/ansible-playbook
 	python3 -m pip install netaddr
 
 	#if [ -e /etc/rc.d/init.d/ceph ]; then

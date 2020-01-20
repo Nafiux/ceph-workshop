@@ -1,6 +1,6 @@
 # ceph-workshop
 
-Step-by-step instructions about how to deploy a [Ceph](https://ceph.io/) cluster.
+Step-by-step instructions to deploy a [Ceph](https://ceph.io/) cluster using [ceph-ansible](https://github.com/ceph/ceph-ansible) in a Virtual Environment.
 
 For more information, please refer to the Infrastructure as a Service (IaaS) Special Interest Group (SIG) homepage: https://iaas.sig.nafiux.org/
 
@@ -33,6 +33,42 @@ The following guidelines should be followed to contribute with this project:
 # Getting started
 
 It's assumed that **192.168.100.0/24** network is available in your local machine (not used) to be created and managed by VirtualBox.
+
+Deploy the virtual environment:
+
+    vagrant up
+
+SSH to ceph-node1
+
+    vagrant ssh ceph-node1
+
+Change working directory to /vagrant
+
+    cd /vagrant
+
+Execute the steps (one-by-one) listed in the directory
+
+    sudo ./001-ssh-config.sh
+    sudo ./002-clone-ceph-ansible.sh
+    ...
+
+After the step `006-execute-ansible-playbook.sh`, you should have a healthy cluster with 1 node up and running:
+
+      [vagrant@ceph-node1 ~]$ sudo ceph -s
+      cluster:
+      id:     06d67682-f3fc-49cd-a8ed-04061f4f442a
+      health: HEALTH_OK
+      
+      services:
+      mon: 1 daemons, quorum ceph-node1 (age 11h)
+      mgr: ceph-node1(active, since 11h)
+      osd: 3 osds: 3 up (since 11h), 3 in (since 11h)
+      
+      data:
+      pools:   0 pools, 0 pgs
+      objects: 0 objects, 0 B
+      usage:   3.0 GiB used, 54 GiB / 57 GiB avail
+      pgs:     
 
 # Troubleshooting
 
