@@ -38,37 +38,45 @@ Deploy the virtual environment:
 
     vagrant up
 
-SSH to ceph-node1
+At this point, 3 VirtualBox instances should be up and running, it's recommended to take a `clean` snapshot:
+
+    ./snapshots.sh save clean
+
+SSH to `ceph-node1`
 
     vagrant ssh ceph-node1
 
-Change working directory to /vagrant
+Change working directory to `/vagrant/steps`
 
-    cd /vagrant
+    cd /vagrant/steps
 
 Execute the steps (one-by-one) listed in the directory
 
-    sudo ./001-ssh-config.sh
+    sudo ./001-ssh-config.sh # passwd: vagrant for ssh users
     sudo ./002-clone-ceph-ansible.sh
     ...
 
-After the step `006-execute-ansible-playbook.sh`, you should have a healthy cluster with 1 node up and running:
+After the step `006-execute-ansible-playbook.sh`, you should have a healthy cluster with 1 node up and running, validate the status of the cluster with `sudo ceph -s`
 
-      [vagrant@ceph-node1 ~]$ sudo ceph -s
+    [vagrant@ceph-node1 steps]$ sudo ceph -s
       cluster:
-      id:     06d67682-f3fc-49cd-a8ed-04061f4f442a
-      health: HEALTH_OK
-      
+        id:     6c34b5a0-3999-4193-948d-8e75eff33850
+        health: HEALTH_OK
+     
       services:
-      mon: 1 daemons, quorum ceph-node1 (age 11h)
-      mgr: ceph-node1(active, since 11h)
-      osd: 3 osds: 3 up (since 11h), 3 in (since 11h)
-      
+        mon: 1 daemons, quorum ceph-node1 (age 119s)
+        mgr: ceph-node1(active, since 86s)
+        osd: 3 osds: 3 up (since 52s), 3 in (since 52s)
+     
       data:
-      pools:   0 pools, 0 pgs
-      objects: 0 objects, 0 B
-      usage:   3.0 GiB used, 54 GiB / 57 GiB avail
-      pgs:     
+        pools:   0 pools, 0 pgs
+        objects: 0 objects, 0 B
+        usage:   3.0 GiB used, 54 GiB / 57 GiB avail
+        pgs:     
+
+It's time to take another snapshot for this stage, execute the following command from the host machine (exit the virtual machine):
+
+    ./snapshots.sh save stage1-one-node-cluster
 
 # Troubleshooting
 
