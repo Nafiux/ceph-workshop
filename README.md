@@ -34,9 +34,13 @@ The following guidelines should be followed to contribute with this project:
 
 It's assumed that **192.168.100.0/24** network is available in your local machine (not used) to be created and managed by VirtualBox.
 
+## Stage 1 - Run and provision Virtual Machines
+
 Deploy the virtual environment:
 
-    vagrant up
+```Shell
+vagrant up
+```
 
 At this point, 3 VirtualBox instances should be up and running, it's recommended to take a `clean` snapshot:
 
@@ -52,9 +56,14 @@ Change working directory to `/vagrant/steps`
 
 Execute the steps (one-by-one) listed in the directory
 
-    sudo ./001-ssh-config.sh # passwd: vagrant for ssh users
-    sudo ./002-clone-ceph-ansible.sh
-    ...
+```Shell
+sudo ./001-ssh-config.sh # passwd: vagrant for ssh users
+sudo ./002-clone-ceph-ansible.sh
+sudo ./003-ansible-set-hosts-node1-only.sh
+sudo ./004-mkdir-ceph-ansible-keys.sh
+sudo ./005-configure-all-yml.sh
+sudo ./006-execute-ansible-playbook.sh
+```
 
 After the step `006-execute-ansible-playbook.sh`, you should have a healthy cluster with 1 node up and running, validate the status of the cluster with `sudo ceph -s`
 
