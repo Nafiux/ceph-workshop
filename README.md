@@ -44,15 +44,21 @@ vagrant up
 
 At this point, 3 VirtualBox instances should be up and running, it's recommended to take a `clean` snapshot:
 
-    ./snapshots.sh save clean
+```Shell
+./snapshots.sh save clean
+```
 
 SSH to `ceph-node1`
 
-    vagrant ssh ceph-node1
+```Shell
+vagrant ssh ceph-node1
+```
 
 Change working directory to `/vagrant/steps`
 
-    cd /vagrant/steps
+```Shell
+cd /vagrant/steps
+```
 
 Execute the steps (one-by-one) listed in the directory
 
@@ -65,8 +71,9 @@ sudo ./005-configure-all-yml.sh
 sudo ./006-execute-ansible-playbook.sh
 ```
 
-After the step `006-execute-ansible-playbook.sh`, you should have a healthy cluster with 1 node up and running, validate the status of the cluster with `sudo ceph -s`
+After the step `006-execute-ansible-playbook.sh`, you should have a healthy cluster with **1 node** up and running, validate the status of the cluster with `sudo ceph -s`
 
+```Shell
     [vagrant@ceph-node1 steps]$ sudo ceph -s
       cluster:
         id:     6c34b5a0-3999-4193-948d-8e75eff33850
@@ -82,10 +89,48 @@ After the step `006-execute-ansible-playbook.sh`, you should have a healthy clus
         objects: 0 objects, 0 B
         usage:   3.0 GiB used, 54 GiB / 57 GiB avail
         pgs:     
+```
 
 It's time to take another snapshot for this stage, execute the following command from the host machine (exit the virtual machine):
 
-    ./snapshots.sh save stage1-one-node-cluster
+```Shell
+./snapshots.sh save stage1-one-node-cluster
+```
+
+## Stage 2 - Scaling up the Cluster, adding 2 additional nodes
+
+Update `/etc/ansible/hosts` file with the 3 hosts, and execute the playbook again.
+
+```Shell
+sudo ./007-ansible-set-all-hosts.sh
+sudo ./006-execute-ansible-playbook.sh
+```
+
+After the step `006-execute-ansible-playbook.sh`, you should have a healthy cluster with **3 nodes** up and running, validate the status of the cluster with `sudo ceph -s`
+
+```Shell
+[vagrant@ceph-node1 steps]$ sudo ceph -s
+  cluster:
+    id:     6c34b5a0-3999-4193-948d-8e75eff33850
+    health: HEALTH_OK
+ 
+  services:
+    mon: 3 daemons, quorum ceph-node1,ceph-node2,ceph-node3 (age 3m)
+    mgr: ceph-node1(active, since 3h), standbys: ceph-node2, ceph-node3
+    osd: 9 osds: 9 up (since 20s), 9 in (since 20s)
+ 
+  data:
+    pools:   0 pools, 0 pgs
+    objects: 0 objects, 0 B
+    usage:   9.0 GiB used, 162 GiB / 171 GiB avail
+    pgs:
+```
+
+It's time to take another snapshot for this stage, execute the following command from the host machine (exit the virtual machine):
+
+```Shell
+./snapshots.sh save stage2-three-nodes-cluster
+```
 
 # Troubleshooting
 

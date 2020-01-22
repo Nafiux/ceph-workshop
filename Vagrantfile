@@ -32,7 +32,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 node1.vm.hostname = ceph_node1
                 node1.vm.synced_folder ".", "/vagrant", type: "nfs"
                 node1.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
-                node1.vm.provision "shell", path: "post-deploy.sh", run: "always"
+                node1.vm.provision "shell", path: "post-deploy.sh", run: "once"
                 node1.vm.provider "virtualbox" do |v|
                         v.customize ["modifyvm", :id, "--memory", "1280"]
                         v.name = ceph_node1
@@ -65,7 +65,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 node2.vm.hostname = ceph_node2
                 node2.vm.synced_folder ".", "/vagrant", type: "nfs"
                 node2.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
-                node2.vm.provision "shell", path: "post-deploy.sh", run: "always"
+                node2.vm.provision "shell", path: "post-deploy.sh", run: "once"
                 node2.vm.provider "virtualbox" do |v|
                         v.customize ["modifyvm", :id, "--memory", "1024"]
                         v.name = ceph_node2
@@ -98,7 +98,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 node3.vm.hostname = ceph_node3
                 node3.vm.synced_folder ".", "/vagrant", type: "nfs"
                 node3.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
-                node3.vm.provision "shell", path: "post-deploy.sh", run: "always"
+                node3.vm.provision "shell", path: "post-deploy.sh", run: "once"
                 node3.vm.provider "virtualbox" do |v|
                         v.customize ["modifyvm", :id, "--memory", "1024"]
                         v.name = ceph_node3
