@@ -6,6 +6,7 @@ if [ $value -eq 0 ]; then
 	192.168.100.101 ceph-node1
 	192.168.100.102 ceph-node2
 	192.168.100.103 ceph-node3
+	192.168.100.110 client1
 	######################################################
 	" | sed -e 's/^[ \t]*//' >> /etc/hosts
 	# reference https://www.cyberciti.biz/tips/delete-leading-spaces-from-front-of-each-word.html

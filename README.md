@@ -32,9 +32,14 @@ The following guidelines should be followed to contribute with this project:
 
 # Getting started
 
-It's assumed that **192.168.100.0/24** network is available in your local machine (not used) to be created and managed by VirtualBox.
+It's assumed that:
 
-## Stage 1 - Run and provision Virtual Machines
+1) **192.168.100.0/24** network is available in your local machine (not used) to be created and managed by VirtualBox.
+2) A HTTP Proxy is running on the host https://iaas.sig.nafiux.org/spikes/squid_proxy at 192.168.100.1:3128
+
+Glossary: https://docs.ceph.com/docs/master/glossary/
+
+## Stage 1 - Provisioning Virtual Machines
 
 Deploy the virtual environment:
 
@@ -42,7 +47,7 @@ Deploy the virtual environment:
 vagrant up
 ```
 
-At this point, 3 VirtualBox instances should be up and running, it's recommended to take a `clean` snapshot:
+At this point, **4** VirtualBox instances should be up and running, it's recommended to take a `clean` snapshot:
 
 ```Shell
 ./snapshots.sh save clean
@@ -131,6 +136,98 @@ It's time to take another snapshot for this stage, execute the following command
 ```Shell
 ./snapshots.sh save stage2-three-nodes-cluster
 ```
+
+## Stage 3 - Ceph Block Device
+
+At this point, the ceph cluster is ready, and it's time to configure the first client.
+
+SSH into `client1` to check for RBD support in the kernel:
+
+```Shell
+vagrant ssh client1
+cat /etc/centos-release # 1) Check OS version
+uname -r                # 2) Check Kernel version
+sudo modprobe rbd       # 3) Check RBD support
+echo $?                 # 4) Print exit code, should be 0
+```
+
+SSH into `ceph-node1` to add `client1` as **ceph client** in `/etc/ansible/hosts` and run the playbook again:
+
+```Shell
+sudo ./008-ansible-add-client1-to-hosts.sh
+sudo ./006-execute-ansible-playbook.sh
+```
+
+With the default configuration in `client1`, try to connect to ceph by executing:
+
+```Shell
+vagrant ssh client1
+sudo ceph -s
+```
+
+You will get `[errno 13] error connecting to the cluster` which is a **Permission denied** error because authentication hasn't configured on `client1` yet.
+
+Before configure authentication, we need to create a **pool** that will be used to store **block device** objects, since no default pools are created after [Luminous release](https://ceph.com/community/new-luminous-pool-tags/).
+
+```Shell
+# List available pools
+sudo ceph osd lspools # No results should be returned.
+
+# Create a new pool, see:
+# 1) https://www.marksei.com/ceph-pools-beginners-guide/
+# 2) https://docs.ceph.com/docs/nautilus/rados/operations/placement-groups/#choosing-the-number-of-placement-groups
+# 3) https://www.marksei.com/rbd-images-ceph-beginner/
+# PGs = (9 * 100) / 3 = 300, nearest power of 2: 512
+sudo ceph osd pool create rbd 512 512
+
+# Initialize rbd pool
+sudo rbd pool init
+
+# List available pools
+sudo ceph osd lspools # 1 pool
+```
+
+Let's create a RBD client:
+
+```Shell
+vagrant ssh ceph-node1
+sudo ceph auth get-or-create client.rbd mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=rbd'
+
+# Example output:
+[client.rbd]
+        key = AQAiXi5eArcOKxAAFGMdBJhjvBwCz44QmGNSMg==
+```
+
+Add key to `client1` machine for `client.rbd` user:
+
+```Shell
+vagrant ssh ceph-node1
+sudo ceph auth get-or-create client.rbd mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=rbd' | sudo ssh root@client1 tee /etc/ceph/ceph.client.rbd.keyring
+```
+
+Validate if `client1` can communicate with ceph:
+
+```Shell
+vagrant ssh client1
+sudo ceph -s --name client.rbd
+```
+
+## Create a Ceph Block Device
+
+```Shell
+vagrant ssh client1
+sudo rbd --name client.rbd create rbd1 --size 10240
+sudo rbd --name client.rbd --image rbd1 info
+```
+
+## Mapping Ceph Block Device
+
+```Shell
+vagrant ssh client1
+sudo rbd --name client.rbd map --image rbd1
+```
+
+TODO: I'm here.
 
 # Common commands used by **Ceph** admins
 
