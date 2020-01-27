@@ -170,6 +170,7 @@ You will get `[errno 13] error connecting to the cluster` which is a **Permissio
 Before configure authentication, we need to create a **pool** that will be used to store **block device** objects, since no default pools are created after [Luminous release](https://ceph.com/community/new-luminous-pool-tags/).
 
 ```Shell
+vagrant ssh ceph-node1
 # List available pools
 sudo ceph osd lspools # No results should be returned.
 
@@ -216,16 +217,59 @@ sudo ceph -s --name client.rbd
 
 ```Shell
 vagrant ssh client1
-sudo rbd --name client.rbd create rbd1 --size 10240
-sudo rbd --name client.rbd --image rbd1 info
+sudo rbd --name client.rbd create image1 --size 10240
+sudo rbd --name client.rbd --image image1 info
+sudo rbd --name client.rbd list
 ```
 
 ## Mapping Ceph Block Device
 
 ```Shell
 vagrant ssh client1
-sudo rbd --name client.rbd map --image rbd1
+sudo rbd --name client.rbd map --image image1
+
+# You should get am error: RBD image feature set mistmatch.
+
+rbd: sysfs write failed
+RBD image feature set mismatch. You can disable features unsupported by the kernel with "rbd feature disable image1 object-map fast-diff deep-flatten".
+In some cases useful info is found in syslog - try "dmesg | tail".
+rbd: map failed: (6) No such device or address
+
+# Disable the unsupported features dynamically
+sudo rbd --name client.rbd feature disable image1 exclusive-lock object-map deep-flatten fast-diff
+
+# Try again
+sudo rbd --name client.rbd map --image image1
+
+Output:
+/dev/rbd0
+
+# Check the mapped block device
+sudo rbd --name client.rbd showmapped
+
+Output:
+id pool namespace image  snap device    
+0  rbd            image1 -    /dev/rbd0 
+
+# To make use of the block device, we should create a filesystem on it and mounting it:
+sudo fdisk -l /dev/rbd0
+sudo mkfs.xfs /dev/rbd0 # xfs doesn't support shrinking
+sudo mkdir /mnt/ceph-disk1
+sudo mount /dev/rbd0 /mnt/ceph-disk1
+df -h /mnt/ceph-disk1
+
+# Test the block device by writing data on it:
+sudo dd if=/dev/zero of=/mnt/ceph-disk1/file1 count=100 bs=1M
+df -h /mnt/ceph-disk1
+
+# Map the block device across reboots
+See page 48 & 49 of the book.
+
+# Rezising
+See page 50 & 51 of the book.
 ```
+
+## Working with RBD snapshots
 
 TODO: I'm here.
 
