@@ -4,6 +4,8 @@ Step-by-step instructions to deploy a [Ceph](https://ceph.io/) cluster using [ce
 
 For more information, please refer to the Infrastructure as a Service (IaaS) Special Interest Group (SIG) homepage: https://iaas.sig.nafiux.org/
 
+[![IaaS SIG](https://iaas.sig.nafiux.org/_media/wiki/logo.png)](https://iaas.sig.nafiux.org)
+
 ## Objective
 
 This project is aligned to the following [IaaS SIG](https://iaas.sig.nafiux.org/) objective:
@@ -628,6 +630,12 @@ mgr.ceph-node3
 ```
 
 # Troubleshooting
+
+## Recording of a simple vagrant up, vagrant halt & vagrant up
+
+This example recording shows the creation of the virtual machines only, it doesn't contains the installation of ceph, is just to showcase the interaction with vagrant and virtualbox.
+
+[![asciicast](https://asciinema.org/a/515oClb0Dl7Smi4lniQzsl59X.png)](https://asciinema.org/a/515oClb0Dl7Smi4lniQzsl59X)
 
 ## Debian 10 (buster)
 
